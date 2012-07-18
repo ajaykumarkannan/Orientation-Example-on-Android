@@ -8,16 +8,15 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.widget.TextView;
 
+// Mostly from https://groups.google.com/forum/?fromgroups#!topic/android-beginners/V4pOfLn8klQ
+
 public class MainActivity extends Activity implements SensorEventListener {
 	TextView data0, data1, data2;
 	private SensorManager mSensMan;
-	private float mAzimuth;
 	private float[] mGravs = new float[3];
 	private float[] mGeoMags = new float[3];
 	private float[] mOrientation = new float[3];
-	private float[] mRotationM = new float[9]; // Use [16] to co-operate with
-												// android.opengl.Matrix
-	private float[] mRemapedRotationM = new float[9];
+	private float[] mRotationM = new float[9];
 	private boolean mFailed;
 
 	/** Called when the activity is first created. */
@@ -63,10 +62,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 		}
 
 		if (SensorManager.getRotationMatrix(mRotationM, null, mGravs, mGeoMags)) {
-			/*
-			 * SensorManager.remapCoordinateSystem(mRotationM,
-			 * SensorManager.AXIS_X, SensorManager.AXIS_Z, mRemapedRotationM);
-			 */
 			SensorManager.getOrientation(mRotationM, mOrientation);
 			onSuccess();
 		} else
@@ -80,13 +75,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 		data0.setText("1: " + Math.round(Math.toDegrees(mOrientation[0])));
 		data1.setText("2: " + Math.round(Math.toDegrees(mOrientation[1])));
 		data2.setText("3: " + Math.round(Math.toDegrees(mOrientation[2])));
-		/*
-		 * // Convert the azimuth to degrees in 0.5 degree resolution. mAzimuth
-		 * = (float) Math.round((Math.toDegrees(mOrientation[2])) * 2) / 2; //
-		 * Adjust the range: 0 < range <= 360 (from: -180 < range <= 180).
-		 * mAzimuth = (mAzimuth + 360) % 360; // alternative: mAzimuth = //
-		 * mAzimuth>=0 ? mAzimuth : // mAzimuth+360;
-		 */
 	}
 
 	void onFailure() {
